@@ -32,7 +32,7 @@
 
                             <ContentPresenter Name="PART_ContentPresenter"
                                               Grid.Column="0"
-                                              FontFamily="{StaticResource QuicksandFont}"
+                                              FontFamily="{TemplateBinding FontFamily}"
                                               FontWeight="{TemplateBinding FontWeight}"
                                               Padding="{TemplateBinding Padding}"
                                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"

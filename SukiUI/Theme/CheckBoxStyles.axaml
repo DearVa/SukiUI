@@ -30,7 +30,7 @@
                             Height="20"
                             VerticalAlignment="Center"
                             Background="{TemplateBinding Background}"
-                            BorderBrush="{DynamicResource SukiStrongBackground}"
+                            BorderBrush="{DynamicResource SukiControlBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="6">
                         <Border.Transitions>
@@ -90,6 +90,7 @@
     </Style>
     <Style Selector="CheckBox:checked /template/ Border#border">
         <Setter Property="Background" Value="{DynamicResource SukiPrimaryColor}" />
+        <Setter Property="BorderThickness" Value="0" />
     </Style>
     <Style Selector="CheckBox /template/ Path#checkMark">
         <Setter Property="Opacity" Value="0"></Setter>

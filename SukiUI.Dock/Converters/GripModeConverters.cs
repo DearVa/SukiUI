@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Dock.Model.Core;
 
-namespace Dock.Avalonia.Converters;
+namespace SukiUI.Dock.Converters;
 
 /// <summary>
 /// The <see cref="GripMode"/> enum value converters.

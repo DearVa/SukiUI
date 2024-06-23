@@ -56,7 +56,7 @@ public partial class SukiTheme : Styles
     /// Currently active <see cref="SukiColorTheme"/>
     /// If you want to change this please use <see cref="ChangeColorTheme(SukiUI.Models.SukiColorTheme)"/>
     /// </summary>
-    public SukiColorTheme? ActiveColorTheme { get; private set; }
+    public SukiColorTheme? ActiveColorTheme { get; set; }
 
     /// <summary>
     /// All available Color Themes.
@@ -229,7 +229,8 @@ public partial class SukiTheme : Styles
             new DefaultSukiColorTheme(SukiColor.Orange, Color.Parse("#ED8E12"), Color.Parse("#176CE8")),
             new DefaultSukiColorTheme(SukiColor.Red, Color.Parse("#D03A2F"), Color.Parse("#2FC5D0")),
             new DefaultSukiColorTheme(SukiColor.Green, Colors.ForestGreen, Color.Parse("#B24DB0")),
-            new DefaultSukiColorTheme(SukiColor.Blue, Color.Parse("#0A59F7"), Color.Parse("#F7A80A"))
+            new DefaultSukiColorTheme(SukiColor.Blue, Color.Parse("#0A59F7"), Color.Parse("#F7A80A")),
+            new DefaultSukiColorTheme(SukiColor.Pink, Color.Parse("#0BD2FF"), Color.Parse("#EE4BB5"))
         };
         DefaultColorThemes = defaultThemes.ToDictionary(x => x.ThemeColor, y => (SukiColorTheme)y);
     }

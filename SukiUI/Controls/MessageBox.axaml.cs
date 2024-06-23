@@ -1,8 +1,8 @@
-using System;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
-using Avalonia.Markup.Xaml;
+using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
 
 namespace SukiUI.Controls
 {
@@ -12,15 +12,6 @@ namespace SukiUI.Controls
         {
             InitializeComponent();
         }
-        
-        protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
-        {
-            base.OnApplyTemplate(e);
-
-            e.NameScope.Get<Button>("ButtonAction").Click += ((sender, args) => _onActionCallback?.Invoke());
-        }
-        
-        public Action? _onActionCallback;
         
         public static readonly StyledProperty<object?> IconProperty =
             AvaloniaProperty.Register<MessageBox, object?>(nameof(Icon));
@@ -40,22 +31,62 @@ namespace SukiUI.Controls
             set => SetValue(TitleProperty, value);
         }
     
-        public static readonly StyledProperty<bool> ShowActionButtonProperty =
-            AvaloniaProperty.Register<MessageBox, bool>(nameof(ShowActionButton));
+        public static readonly StyledProperty<object?> PrimaryButtonContentProperty =
+            AvaloniaProperty.Register<MessageBox, object?>(nameof(PrimaryButtonContent));
 
-        public bool ShowActionButton
+        public object? PrimaryButtonContent
         {
-            get => GetValue(ShowActionButtonProperty);
-            set => SetValue(ShowActionButtonProperty, value);
+            get => GetValue(PrimaryButtonContentProperty);
+            set => SetValue(PrimaryButtonContentProperty, value);
         }
-    
-        public static readonly StyledProperty<string> ActionButtonContentProperty =
-            AvaloniaProperty.Register<MessageBox, string>(nameof(ActionButtonContent));
+        
+        public static readonly StyledProperty<object?> SecondaryButtonContentProperty =
+            AvaloniaProperty.Register<MessageBox, object?>(nameof(SecondaryButtonContent));
+        
+        public object? SecondaryButtonContent
+        {
+            get => GetValue(SecondaryButtonContentProperty);
+            set => SetValue(SecondaryButtonContentProperty, value);
+        }
+        
+        public static readonly StyledProperty<object?> CancelButtonContentProperty =
+            AvaloniaProperty.Register<MessageBox, object?>(nameof(CancelButtonContent));
+        
+        public object? CancelButtonContent
+        {
+            get => GetValue(CancelButtonContentProperty);
+            set => SetValue(CancelButtonContentProperty, value);
+        }
 
-        public string ActionButtonContent
+        private void PrimaryButton_OnClick(object sender, RoutedEventArgs e)
         {
-            get => GetValue(ActionButtonContentProperty);
-            set => SetValue(ActionButtonContentProperty, value);
+            tcs.TrySetResult(MessageBoxResult.Primary);
         }
+
+        private void SecondaryButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            tcs.TrySetResult(MessageBoxResult.Secondary);
+        }
+
+        private void CancelButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            tcs.TrySetResult(MessageBoxResult.Cancel);
+        }
+
+        protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
+        {
+            base.OnDetachedFromLogicalTree(e);
+            tcs.TrySetResult(MessageBoxResult.Cancel);
+        }
+
+        private readonly TaskCompletionSource<MessageBoxResult> tcs = new();
+        public Task<MessageBoxResult> ResultTask => tcs.Task;
     }
+}
+
+public enum MessageBoxResult
+{
+    Primary,
+    Secondary,
+    Cancel
 }
