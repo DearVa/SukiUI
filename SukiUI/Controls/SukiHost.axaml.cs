@@ -26,19 +26,30 @@ namespace SukiUI.Controls
     {
         protected override Type StyleKeyOverride => typeof(SukiHost);
 
-        public readonly static StyledProperty<bool> IsDialogOpenProperty =
-            AvaloniaProperty.Register<SukiHost, bool>(nameof(IsDialogOpen));
-
+        public static readonly DirectProperty<SukiHost, bool> IsDialogOpenProperty =
+            AvaloniaProperty.RegisterDirect<SukiHost, bool>(
+                "IsDialogOpen",
+                o => o.IsDialogOpen,
+                (o, v) => o.IsDialogOpen = v);
+        
         public bool IsDialogOpen
         {
-            get => GetValue(IsDialogOpenProperty);
-            set => SetValue(IsDialogOpenProperty, value);
+            get => isDialogOpen;
+            private set => SetAndRaise(IsDialogOpenProperty, ref isDialogOpen, value);
         }
+        
+        private bool isDialogOpen;
 
-        public readonly static StyledProperty<Control> DialogContentProperty =
-            AvaloniaProperty.Register<SukiHost, Control>(nameof(DialogContent));
+        public readonly static StyledProperty<Control?> DialogContentProperty =
+            AvaloniaProperty.Register<SukiHost, Control?>(
+                nameof(DialogContent),
+                coerce: (o, c) =>
+                {
+                    o.SetValue(IsDialogOpenProperty, c != null);
+                    return c;
+                });
 
-        public Control DialogContent
+        public Control? DialogContent
         {
             get => GetValue(DialogContentProperty);
             set => SetValue(DialogContentProperty, value);
@@ -154,7 +165,6 @@ namespace SukiUI.Controls
                 throw new InvalidOperationException("No SukiHost present in this topLevel");
             }
             var control = content as Control ?? ViewLocator.TryBuild(content);
-            host.IsDialogOpen = true;
             host.DialogContent = control;
             host.AllowBackgroundClose = allowBackgroundClose;
             host.GetTemplateChildren().First(n => n.Name == "BorderDialog1").Opacity = showCardBehind ? 1 : 0;
@@ -171,7 +181,7 @@ namespace SukiUI.Controls
             ShowDialog(MainToplevel, content, showCardBehind, allowBackgroundClose);
         }
 
-        public static Task<MessageBoxResult> ShowMessageBox(MessageBoxModel model, bool allowBackgroundClose = true)
+        public static async Task<MessageBoxResult> ShowMessageBox(MessageBoxModel model, bool allowBackgroundClose = true)
         {
             var messageBox = new MessageBox
             {
@@ -197,7 +207,9 @@ namespace SukiUI.Controls
                 },
             };
             ShowDialog(messageBox, false, allowBackgroundClose);
-            return messageBox.ResultTask;
+            var result = await messageBox.ResultTask;
+            CloseDialog();
+            return result;
         }
 
         private static LinearGradientBrush GetGradient(Color c1)
@@ -225,8 +237,8 @@ namespace SukiUI.Controls
             {
                 throw new InvalidOperationException("No SukiHost present in this topLevel");
             }
-            host.IsDialogOpen = false;
 
+            host.DialogContent = null;
         }
 
         /// <summary>
@@ -242,11 +254,8 @@ namespace SukiUI.Controls
         /// </summary>
         private static void BackgroundRequestClose(SukiHost host)
         {
-            if (!host.AllowBackgroundClose)
-            {
-                return;
-            }
-            host.IsDialogOpen = false;
+            if (!host.AllowBackgroundClose) return;
+            host.DialogContent = null;
         }
 
         /// <summary>
