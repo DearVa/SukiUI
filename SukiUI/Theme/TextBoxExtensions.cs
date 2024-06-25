@@ -106,7 +106,7 @@ public class BoolToWidthProgressConverter : IValueConverter
         if (value == null)
             return 0;
 
-        return ((bool)value) ? 40 : 0;
+        return ((bool)value) ? 30 : 0;
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
